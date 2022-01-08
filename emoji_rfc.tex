@@ -1,0 +1,67 @@
+%! TEX TS-program = lualatex
+\documentclass[a4paper]{article}
+
+\usepackage{textcomp}
+\usepackage[english]{babel}
+
+\newcommand\ESCAPE{\textbf{ESCAPE TAG}}
+\newcommand\ZWJ{\textbf{ZERO WIDTH JOINER}}
+\usepackage{fontspec}
+
+\author {Mm2PL}
+\title {Emoji RFC}
+
+\begin{document}
+    \maketitle
+    \begin{center}
+        \small{Version: 1.1}
+    \end{center}
+
+    \begin{section}{Abstract}
+        The Unicode character \ZWJ{} (U+200D) has been banned from Twitch Chat.
+        This document describes an alternate emoji joining scheme.
+
+        The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+        "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and "OPTIONAL" in this
+        document are to be interpreted as described in RFC 2119.
+    \end{section}
+    \begin{section}{Emoji joining in Unicode}
+        Unicode uses the \ZWJ{} character to combine
+        multiple emoji into a single pictogram. Many of these combined emoji
+        are not available on Twitch Chat. For example \textbf{man farmer} consists of:
+        \begin{itemize}
+            \item \textbf{MAN}
+            \item \textbf{ZERO WIDTH JOINER}
+            \item \textbf{EAR OF RICE}
+        \end{itemize}
+        
+        While on Twitch it renders as:
+        \begin{itemize}
+            \item \textbf{MAN}
+            \item \textbf{EAR OF RICE}
+        \end{itemize}
+    \end{section}
+    \begin{section}{The solution to this problem}
+        The solution is quite simple. Encoding the \ZWJ{} as another character or
+        sequence of characters, preferably invisible ones. The character that
+        was decided on is \textbf{U+E0002}. It has has no official name, in
+        this document it will be called \ESCAPE{}. Its properties are quite
+        unique:
+        \begin{enumerate}
+            \item It has no glyph.
+            \item It is not a space.
+            \item It is not filtered by Twitch.
+        \end{enumerate}
+        Before processing a message the \ESCAPE{} character MUST be replaced
+        with \ZWJ{} unless its proceeded with another \ESCAPE{}, in which case
+        it MUST NOT replaced. The suggested regular expression that SHOULD be
+        used for replacing \ESCAPE{} with \ZWJ{} is:
+        \begin{verbatim}
+            (?<!\U000E0002)\U000E0002
+        \end{verbatim}
+        Where:
+        \begin{enumerate}
+            \item \verb`\U000E0002` is \ESCAPE{}
+        \end{enumerate}
+    \end{section}
+\end{document}
